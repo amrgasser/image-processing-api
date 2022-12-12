@@ -1,7 +1,12 @@
 import fs from 'fs';
 
 export const isFullExists = (name: string): boolean => {
-  return fs.existsSync(`assets/full/${name}.jpg`);
+  try {
+    const res: boolean = fs.existsSync(`assets/full/${name}.jpg`);
+    return res;
+  } catch (err) {
+    throw new Error(err as unknown as string);
+  }
 };
 
 export const isThumbExists = (

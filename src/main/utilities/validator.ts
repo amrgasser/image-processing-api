@@ -1,40 +1,41 @@
 import express from 'express';
 import { isFullExists } from './pathUtils';
+type Result = {
+  result?: string;
+  error: boolean;
+  obj?: Thumb;
+};
+
 type Thumb = {
-    name: string,
-    height: number,
-    width: number
-}
+  name: string;
+  width: number;
+  height: number;
+};
 
-const validator = (req: express.Request, res: express.Response): Thumb => {
-    const name: string = req.params.name;
-    if (req.query.width == undefined) {
-        res.status(400).send('Width missing');
-    }
-    if (req.query.height == undefined) {
-        res.status(400).send('Height missing');
-    }
-    if (!containsOnlyNumbers((req.query.height as unknown) as string) || !containsOnlyNumbers((req.query.width as unknown) as string)) {
-        res.status(400).send('Invalid format for height or width');
-    }
+const validator = (req: express.Request, res: express.Response): Result => {
+  const name = req.params.name as string;
 
-    const height: number = Number.parseInt(
-        req.query.height as unknown as string
-    );
-    const width: number = Number.parseInt(
-        req.query.width as unknown as string
-    );
+  if (!isFullExists(req.params.name)) {
+    return { result: 'file not found', error: true };
+  } else if (req.query.width == undefined) {
+    return { result: 'Width missing', error: true };
+  } else if (req.query.height == undefined) {
+    return { result: 'Height missing', error: true };
+  } else if (
+    !containsOnlyNumbers(req.query.height as unknown as string) ||
+    !containsOnlyNumbers(req.query.width as unknown as string)
+  ) {
+    return { result: 'Invalid format for height or width', error: true };
+  }
 
-    if (!isFullExists(name)) {
-        res.status(400).send('file not found');
-    }
-
-    return { name, height, width };
-}
-
+  const height: number = Number.parseInt(req.query.height as unknown as string);
+  const width: number = Number.parseInt(req.query.width as unknown as string);
+  const obj: Thumb = { name, height, width };
+  return { error: false, obj };
+};
 
 const containsOnlyNumbers = (str: string) => {
-    return /^[0-9]+$/.test(str);
-}
+  return /^[0-9]+$/.test(str);
+};
 
-export default validator
+export default validator;

@@ -5,37 +5,40 @@ import { isThumbExists } from './utilities/pathUtils';
 
 const app = express();
 const port = 3000;
-
-
-
-app.get('/hi', (req, res) => {
-    res.send('hi');
-});
 app.get(
-    '/api/images/:name',
-    async (req: express.Request, res: express.Response) => {
-        try {
+  '/api/images/:name',
+  async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      const temp = validator(req, res);
+      if (temp.error) {
+        res.status(400).send(temp.result);
+        throw new Error(temp.result);
+      }
+      const { name, height, width } = temp.obj!;
 
-            const { name, height, width } = validator(req, res);
+      // format only if the thumbnail with the following name_height_width does not exist
+      // check if it exists or not
+      if (!isThumbExists(name, height, width)) {
+        await format(name, height, width);
+      }
 
-            if (!isThumbExists(name, height, width)) {
-                await format(name, height, width);
-            }
-            res.sendFile(
-                `${name}_${height}_${width}.jpg`,
-                { root: 'assets/thumb' },
-                (err) => {
-                    if (err) {
-                        console.log(err);
-                    }
-                }
-            );
-
-            return res;
-        } catch (e: unknown) {
-            throw new Error(e as string);
+      //send response file if validator works && thumbnail exists.
+      res.sendFile(
+        `${name}_${height}_${width}.jpg`,
+        { root: 'assets/thumb' },
+        (err) => {
+          if (err) {
+            throw new Error(err.message);
+          }
         }
-    }
+      );
+      return res;
+    } catch (err: unknown) {}
+  }
 );
 
 app.listen(port);

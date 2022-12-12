@@ -17,6 +17,12 @@ describe('Test endpoint responses', () => {
             done();
         });
     });
+    it('should return false with incorrect height param', (done) => {
+        request.get('/api/images/fjord?height=20s0&width=200').then((res) => {
+            expect(isThumbExists('fjord', 200, 200)).toBe(false);
+            done();
+        });
+    });
     it('API should throw error', (done) => {
         request
             .get('/api/images/SomeRandomName?height=200&width=200')

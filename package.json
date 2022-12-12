@@ -4,7 +4,7 @@
  "description": "Image Processing Project",
  "main": "index.js",
  "scripts": {
-  "test": "npm run build & jasmine",
+  "test": "npm run build && jasmine",
   "prettier": "prettier --config .prettierrc 'src/**/*.ts' --write",
   "format": "prettier --config .prettierrc 'src/**/*.ts' --write & eslint 'src/**/*.ts",
   "lint": "eslint 'src/**/*.ts'",

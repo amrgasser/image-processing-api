@@ -30,6 +30,9 @@ const validator = (req: express.Request, res: express.Response): Result => {
 
   const height: number = Number.parseInt(req.query.height as unknown as string);
   const width: number = Number.parseInt(req.query.width as unknown as string);
+  if (height == 0 || width == 0) {
+    return { result: 'Height or Width cannot be 0', error: true };
+  }
   const obj: Thumb = { name, height, width };
   return { error: false, obj };
 };
